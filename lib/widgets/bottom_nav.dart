@@ -1,5 +1,3 @@
-// /widgets/bottom_nav.dart
-
 import 'package:flutter/material.dart';
 import '/screens/home_screen.dart';
 import '/screens/camera_screen.dart';
@@ -14,10 +12,10 @@ class BottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed, // 🛠 Important fix!
+      type: BottomNavigationBarType.fixed,
       currentIndex: currentIndex,
-      selectedItemColor: Colors.black, // Active icon color
-      unselectedItemColor: Colors.blueGrey, // Inactive icon color
+      selectedItemColor: Colors.black,
+      unselectedItemColor: Colors.blueGrey,
       onTap: (index) {
         switch (index) {
           case 0:

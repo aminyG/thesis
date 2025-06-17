@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/edit_profile': (context) => const EditProfileScreen(),
         '/change_password': (context) => const ChangePasswordScreen(),
-        '/face_recorder': (context) => const FaceRecorderScreen(),
+        '/face_recorder': (context) => FaceRecorderScreen(),
       },
     );
   }
