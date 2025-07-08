@@ -121,7 +121,8 @@ class _LoginScreenState extends State<LoginScreen> {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': emailController.text,
-          'password': '123456', // Default password
+          // 'password': '123456', // Default password
+          'password': passwordController.text,
         }),
       );
 
