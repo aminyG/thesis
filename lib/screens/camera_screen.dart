@@ -1,11 +1,199 @@
-import 'package:flutter/material.dart';
-import 'package:camera/camera.dart';
-import 'package:flutter_application_1/widgets/bottom_nav.dart';
-import 'package:http/http.dart' as http;
+// import 'dart:convert';
+// import 'dart:io';
+
+// import 'package:camera/camera.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_application_1/services/face_api_service.dart';
+// import 'package:flutter_application_1/widgets/bottom_nav.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:http/http.dart' as http;
+
+// class CameraScreen extends StatefulWidget {
+//   @override
+//   _CameraScreenState createState() => _CameraScreenState();
+// }
+
+// class _CameraScreenState extends State<CameraScreen> {
+//   CameraController? _controller;
+//   Future<void>? _initializeControllerFuture;
+//   bool isLoading = false;
+//   String? errorMessage;
+//   String? userIdentifier;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _setupCamera();
+//     _getAuthenticatedUser();
+//   }
+
+//   Future<void> _setupCamera() async {
+//     final cameras = await availableCameras();
+//     final frontCamera = cameras.firstWhere(
+//       (camera) => camera.lensDirection == CameraLensDirection.front,
+//     );
+
+//     _controller = CameraController(frontCamera, ResolutionPreset.medium);
+//     _initializeControllerFuture = _controller!.initialize();
+//     if (mounted) setState(() {});
+//   }
+
+//   Future<void> _getAuthenticatedUser() async {
+//     try {
+//       final token = await _getAuthToken();
+//       if (token == null) {
+//         ScaffoldMessenger.of(context)
+//             .showSnackBar(SnackBar(content: Text('User is not logged in.')));
+//         return;
+//       }
+
+//       final response = await http.get(
+//         Uri.parse('https://presence.guestallow.com/api/users/me'),
+//         headers: {
+//           'Accept': 'application/json',
+//           'Authorization': 'Bearer $token',
+//         },
+//       );
+
+//       if (response.statusCode == 200) {
+//         final data = json.decode(response.body);
+//         setState(() {
+//           userIdentifier = data['user']['id'].toString();
+//         });
+//       } else {
+//         ScaffoldMessenger.of(context).showSnackBar(
+//             SnackBar(content: Text('Failed to retrieve user details')));
+//       }
+//     } catch (e) {
+//       ScaffoldMessenger.of(context)
+//           .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+//     }
+//   }
+
+//   Future<String?> _getAuthToken() async {
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//     return prefs.getString('auth_token');
+//   }
+
+//   Future<void> _verifyFace() async {
+//     if (userIdentifier == null) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('User identifier not available')),
+//       );
+//       return;
+//     }
+
+//     final token = await _getAuthToken();
+//     if (token == null) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Token not available. Please log in again.')),
+//       );
+//       return;
+//     }
+
+//     setState(() {
+//       isLoading = true;
+//       errorMessage = null;
+//     });
+
+//     try {
+//       await _initializeControllerFuture;
+//       final image = await _controller!.takePicture();
+//       final File file = File(image.path);
+
+//       final apiService = FaceApiService();
+//       final result = await apiService.verifyFace(
+//         imageFile: file,
+//         identifier: userIdentifier!,
+//         token: token,
+//       );
+
+//       if (result['status_code'] == 200) {
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(content: Text('✅ ${result['message']}')),
+//         );
+//       } else {
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(content: Text('❌ ${result['message']}')),
+//         );
+//       }
+//     } catch (e) {
+//       setState(() {
+//         errorMessage = 'Error: ${e.toString()}';
+//       });
+//     } finally {
+//       setState(() {
+//         isLoading = false;
+//       });
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     _controller?.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: Text("Face Verification")),
+//       body: Padding(
+//         padding: EdgeInsets.symmetric(horizontal: 20),
+//         child: SingleChildScrollView(
+//           child: Column(
+//             children: [
+//               _controller == null
+//                   ? Center(child: CircularProgressIndicator())
+//                   : FutureBuilder(
+//                       future: _initializeControllerFuture,
+//                       builder: (context, snapshot) {
+//                         if (snapshot.connectionState == ConnectionState.done) {
+//                           return ClipRRect(
+//                             borderRadius: BorderRadius.circular(20),
+//                             child: AspectRatio(
+//                               aspectRatio: 3 / 4.5,
+//                               child: CameraPreview(_controller!),
+//                             ),
+//                           );
+//                         } else {
+//                           return Center(child: CircularProgressIndicator());
+//                         }
+//                       },
+//                     ),
+//               SizedBox(height: 20),
+//               ElevatedButton(
+//                 onPressed: isLoading ? null : _verifyFace,
+//                 child: isLoading
+//                     ? CircularProgressIndicator(color: Colors.white)
+//                     : Text("Verify Face"),
+//               ),
+//               if (errorMessage != null)
+//                 Padding(
+//                   padding: const EdgeInsets.all(8.0),
+//                   child: Text(
+//                     errorMessage!,
+//                     style: TextStyle(color: Colors.red),
+//                   ),
+//                 ),
+//               SizedBox(height: 20),
+//             ],
+//           ),
+//         ),
+//       ),
+//       bottomNavigationBar: BottomNav(currentIndex: 1),
+//     );
+//   }
+// }
+
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
-import 'package:http_parser/http_parser.dart';
+
+import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/face_api_service.dart';
+import 'package:flutter_application_1/widgets/bottom_nav.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CameraScreen extends StatefulWidget {
   @override
@@ -19,34 +207,24 @@ class _CameraScreenState extends State<CameraScreen> {
   String? errorMessage;
   String? userIdentifier;
 
-  // Initialize the camera and fetch user info
   @override
   void initState() {
     super.initState();
     _setupCamera();
-    _getAuthenticatedUser(); // Fetch authenticated user
+    _getAuthenticatedUser();
   }
 
-  // Set up the camera controller and initialize the camera
   Future<void> _setupCamera() async {
     final cameras = await availableCameras();
     final frontCamera = cameras.firstWhere(
       (camera) => camera.lensDirection == CameraLensDirection.front,
     );
 
-    _controller = CameraController(
-      frontCamera,
-      ResolutionPreset.medium, // Adjust resolution for wider field of view
-    );
-
+    _controller = CameraController(frontCamera, ResolutionPreset.medium);
     _initializeControllerFuture = _controller!.initialize();
     if (mounted) setState(() {});
-
-    // Apply default zoom level (optional)
-    await _controller!.setZoomLevel(-5.0);
   }
 
-  // Fetch authenticated user and retrieve the user identifier
   Future<void> _getAuthenticatedUser() async {
     try {
       final token = await _getAuthToken();
@@ -56,19 +234,21 @@ class _CameraScreenState extends State<CameraScreen> {
         return;
       }
 
-      final response = await http.get(
-        Uri.parse('https://presence.guestallow.com/api/users/me'),
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token', // Pass the token in headers
-        },
-      );
+      final response = await HttpClient()
+          .getUrl(Uri.parse('https://presence.guestallow.com/api/users/me'))
+          .then((req) {
+        req.headers.add('Accept', 'application/json');
+        req.headers.add('Authorization', 'Bearer $token');
+        return req.close();
+      });
+
+      final responseBody = await response.transform(utf8.decoder).join();
+      print('GET /users/me => $responseBody');
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = json.decode(responseBody);
         setState(() {
-          userIdentifier =
-              data['user']['id']; // Assuming user object contains 'id'
+          userIdentifier = data['user']['id'].toString();
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -80,14 +260,13 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  // Retrieve token from SharedPreferences
   Future<String?> _getAuthToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('auth_token');
+    print('Retrieved Token: $token');
     return token;
   }
 
-  // Capture and verify the face
   Future<void> _verifyFace() async {
     if (userIdentifier == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -96,43 +275,60 @@ class _CameraScreenState extends State<CameraScreen> {
       return;
     }
 
+    final token = await _getAuthToken();
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Token not available. Please log in again.')),
+      );
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+
     try {
       await _initializeControllerFuture;
       final image = await _controller!.takePicture();
       final File file = File(image.path);
 
-      final uri =
-          Uri.parse('http://presence.guestallow.com/api/users/verify-face');
-      final request = http.MultipartRequest('POST', uri);
+      // Log detail request
+      print('---- VERIFY REQUEST ----');
+      print('Identifier: $userIdentifier');
+      print('Token: $token');
+      print('Image path: ${file.path}');
+      print('Image size: ${await file.length()} bytes');
 
-      final photo = await http.MultipartFile.fromPath(
-        'photo',
-        file.path,
-        contentType: MediaType('image', 'jpeg'),
+      final apiService = FaceApiService();
+      final result = await apiService.verifyFace(
+        imageFile: file,
+        identifier: userIdentifier!,
+        token: token,
       );
-      request.files.add(photo);
 
-      // Add the identifier to the request
-      request.fields['identifier'] = userIdentifier!;
+      print('---- VERIFY RESPONSE ----');
+      print(result);
 
-      final response = await request.send();
-
-      if (response.statusCode == 200) {
-        final responseData = await http.Response.fromStream(response);
+      if (result['status_code'] == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content:
-                  Text('Face verification successful: ${responseData.body}')),
+          SnackBar(content: Text('✅ ${result['message']}')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Face verification failed')),
+          SnackBar(content: Text('❌ ${result['message']}')),
         );
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+    } catch (e, stack) {
+      print('EXCEPTION OCCURRED: $e');
+      print(stack);
+      setState(() {
+        errorMessage = 'Error: ${e.toString()}';
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -147,12 +343,10 @@ class _CameraScreenState extends State<CameraScreen> {
     return Scaffold(
       appBar: AppBar(title: Text("Face Verification")),
       body: Padding(
-        padding:
-            EdgeInsets.symmetric(horizontal: 20), // Add padding for spacing
+        padding: EdgeInsets.symmetric(horizontal: 20),
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Camera Preview with Aspect Ratio to avoid distortion
               _controller == null
                   ? Center(child: CircularProgressIndicator())
                   : FutureBuilder(
@@ -160,11 +354,9 @@ class _CameraScreenState extends State<CameraScreen> {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           return ClipRRect(
-                            borderRadius:
-                                BorderRadius.circular(20), // Rounded corners
+                            borderRadius: BorderRadius.circular(20),
                             child: AspectRatio(
-                              aspectRatio: 3 /
-                                  4.5, // Adjusting aspect ratio for better fit
+                              aspectRatio: 3 / 4.5,
                               child: CameraPreview(_controller!),
                             ),
                           );
@@ -174,14 +366,12 @@ class _CameraScreenState extends State<CameraScreen> {
                       },
                     ),
               SizedBox(height: 20),
-              // Face Verification Button
               ElevatedButton(
                 onPressed: isLoading ? null : _verifyFace,
                 child: isLoading
                     ? CircularProgressIndicator(color: Colors.white)
                     : Text("Verify Face"),
               ),
-              // Error Message Display
               if (errorMessage != null)
                 Padding(
                   padding: const EdgeInsets.all(8.0),

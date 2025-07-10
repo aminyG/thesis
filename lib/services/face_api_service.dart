@@ -1,97 +1,140 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class FaceApiService {
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://209.145.52.1:8190/api',
+    baseUrl: 'https://presence.guestallow.com/api',
     headers: {
       'Accept': 'application/json',
-      'Content-Type': 'multipart/form-data'
     },
   ));
 
-  // Fungsi untuk mendaftar wajah
-  Future<Map<String, dynamic>> registerFace(File imageFile) async {
+  // Register face
+  Future<Map<String, dynamic>> registerFace(
+      File imageFile, String token) async {
     final formData = FormData.fromMap({
-      'photo':
-          await MultipartFile.fromFile(imageFile.path, filename: 'face.jpg'),
+      'photo': await MultipartFile.fromFile(
+        imageFile.path,
+        filename: 'face.jpg',
+      ),
     });
 
     try {
-      final response = await _dio.post('/users/face', data: formData);
+      final response = await _dio.post(
+        '/users/face',
+        data: formData,
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
 
-      // Menyimpan respons sebagai Map
-      if (response.statusCode == 200) {
-        return {
-          'status_code': response.statusCode,
-          'message': response.data['message'],
-          'data': response.data['data'],
-        };
-      } else {
-        return {
-          'status_code': response.statusCode,
-          'message': 'Gagal mendaftar wajah'
-        };
-      }
+      return {
+        'status_code': response.statusCode,
+        'message': response.data['message'],
+        'data': response.data['data'],
+      };
     } catch (e) {
       throw Exception('Register failed: $e');
     }
   }
 
-  // Fungsi untuk verifikasi wajah
-  // Future<Map<String, dynamic>> verifyFace(
-  //     File imageFile, String identifier) async {
-  //   final formData = FormData.fromMap({
-  //     'photo':
-  //         await MultipartFile.fromFile(imageFile.path, filename: 'face.jpg'),
-  //     'identifier': identifier,
-  //   });
+  // Verify face
+//   Future<Map<String, dynamic>> verifyFace({
+//     required File imageFile,
+//     required String identifier,
+//     required String token,
+//   }) async {
+//     final formData = FormData.fromMap({
+//       'photo': await MultipartFile.fromFile(
+//         imageFile.path,
+//         filename: 'face.jpg',
+//       ),
+//       'identifier': identifier,
+//     });
 
-  //   try {
-  //     final response = await _dio.post('/users/verify-face', data: formData);
+//     try {
+//       final response = await _dio.post(
+//         '/users/verify-face',
+//         data: formData,
+//         options: Options(
+//           headers: {'Authorization': 'Bearer $token'},
+//         ),
+//       );
 
-  //     // Menyimpan respons sebagai Map
-  //     if (response.statusCode == 200) {
-  //       return {
-  //         'status_code': response.statusCode,
-  //         'message': response.data['message'],
-  //         'data': response.data['data'],
-  //       };
-  //     } else {
-  //       return {
-  //         'status_code': response.statusCode,
-  //         'message': 'Verifikasi gagal'
-  //       };
-  //     }
-  //   } catch (e) {
-  //     throw Exception('Verification failed: $e');
-  //   }
-  // }
+//       return {
+//         'status_code': response.statusCode,
+//         'message': response.data['message'],
+//         'data': response.data['data'],
+//       };
+//     } catch (e) {
+//       throw Exception('Verification failed: $e');
+//     }
+//   }
 
-  Future<bool> verifyFace(String faceImage) async {
+  Future<Map<String, dynamic>> verifyFace({
+    required File imageFile,
+    required String identifier,
+    required String token,
+  }) async {
+    final formData = FormData.fromMap({
+      'photo':
+          await MultipartFile.fromFile(imageFile.path, filename: 'face.jpg'),
+      'identifier': identifier,
+    });
+
     try {
-      final response = await http.post(
-        Uri.parse('https://presence.guestallow.com/api/face/verifyFace'),
-        body: jsonEncode({
-          'face_image': faceImage,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      final response = await _dio.post(
+        'http://presence.guestallow.com/api/users/verify-face',
+        data: formData,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
       );
-      if (response.statusCode == 200) {
-        return true; // Successful response
-      } else {
-        // Log or show a meaningful error
-        print('Error verifying face: ${response.body}');
-        return false;
-      }
+
+      return {
+        'status_code': response.statusCode,
+        'message': response.data['message'],
+        'data': response.data['data'],
+      };
+    } on DioException catch (e) {
+      // Cetak detail error ke log untuk debug
+      print('DioException status: ${e.response?.statusCode}');
+      print('DioException data: ${e.response?.data}');
+
+      return {
+        'status_code': e.response?.statusCode ?? 500,
+        'message': e.response?.data?['message'] ??
+            'Verification failed with status code ${e.response?.statusCode}',
+      };
     } catch (e) {
-      // Catch any errors like network issues
-      print('Error during face verification: $e');
-      return false;
+      print('Exception: $e');
+      return {
+        'status_code': 500,
+        'message': 'Verification failed: $e',
+      };
     }
   }
+
+  // Future<UserModel?> getUserMe() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   final token = prefs.getString('auth_token');
+  //   if (token == null) return null;
+
+  //   final response = await http.get(
+  //     Uri.parse('https://presence.guestallow.com/api/users/me'),
+  //     headers: {
+  //       'Accept': 'application/json',
+  //       'Authorization': 'Bearer $token',
+  //     },
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     final data = json.decode(response.body);
+  //     return UserModel.fromJson(data['user']);
+  //   } else {
+  //     return null;
+  //   }
+  // }
 }

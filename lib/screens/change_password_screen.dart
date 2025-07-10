@@ -15,7 +15,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool _showOld = false;
   bool _showNew = false;
   bool _showConfirm = false;
-
   bool _isPasswordValid = true;
 
   bool _isValidPassword(String pass) {
@@ -34,7 +33,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     }
 
     if (!_isValidPassword(newP)) {
-      _showError('Password minimal 8 karakter, harus ada huruf besar, kecil, dan angka');
+      _showError(
+          'Password minimal 8 karakter, harus ada huruf besar, kecil, dan angka');
       return;
     }
 
@@ -75,39 +75,49 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Ubah Kata Sandi')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      appBar: AppBar(
+        title: const Text('Ubah Kata Sandi'),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Text(
+              'Ubah kata sandi',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'Masukkan kata sandi baru',
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+            const SizedBox(height: 20),
             _buildPasswordField(
               controller: oldPassCtrl,
-              label: 'Kata Sandi Lama',
+              hint: 'Kata Sandi Lama',
               obscure: !_showOld,
               toggle: () => setState(() => _showOld = !_showOld),
             ),
             const SizedBox(height: 16),
             _buildPasswordField(
               controller: newPassCtrl,
-              label: 'Kata Sandi Baru',
+              hint: 'Kata Sandi Baru',
               obscure: !_showNew,
               toggle: () => setState(() => _showNew = !_showNew),
             ),
             if (!_isPasswordValid)
               const Padding(
                 padding: EdgeInsets.only(top: 4),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '❗ Minimal 8 karakter, huruf besar, kecil, dan angka',
-                    style: TextStyle(color: Colors.red, fontSize: 12),
-                  ),
+                child: Text(
+                  '❗ Minimal 8 karakter, huruf besar, kecil, dan angka',
+                  style: TextStyle(color: Colors.red, fontSize: 12),
                 ),
               ),
             const SizedBox(height: 16),
             _buildPasswordField(
               controller: confirmPassCtrl,
-              label: 'Kata Sandi Baru (Konfirmasi)',
+              hint: 'Kata Sandi Baru (Konfirmasi)',
               obscure: !_showConfirm,
               toggle: () => setState(() => _showConfirm = !_showConfirm),
             ),
@@ -115,8 +125,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: const Color(0xFF3B6790),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
                 onPressed: _savePassword,
-                child: const Text('SIMPAN'),
+                child: const Text(
+                  'Ubah Kata Sandi',
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
               ),
             ),
           ],
@@ -127,7 +147,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   Widget _buildPasswordField({
     required TextEditingController controller,
-    required String label,
+    required String hint,
     required bool obscure,
     required VoidCallback toggle,
   }) {
@@ -135,9 +155,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       controller: controller,
       obscureText: obscure,
       decoration: InputDecoration(
-        labelText: label,
+        hintText: hint,
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Colors.grey),
+        ),
         suffixIcon: IconButton(
-          icon: Icon(obscure ? Icons.visibility : Icons.visibility_off),
+          icon: Icon(obscure ? Icons.visibility_off : Icons.visibility),
           onPressed: toggle,
         ),
       ),

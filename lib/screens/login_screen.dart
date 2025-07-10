@@ -131,6 +131,8 @@ class _LoginScreenState extends State<LoginScreen> {
         final token = data['token']; // Get the token from response
         final user = data['user'];
 
+        print('✅ Login berhasil. TOKEN: $token');
+
         // Save the token and user info in shared preferences for future requests
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('auth_token', token);
