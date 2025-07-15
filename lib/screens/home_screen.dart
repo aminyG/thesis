@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/camera_screen.dart';
+import 'package:presence_app/screens/camera_screen.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
 import '/widgets/bottom_nav.dart';

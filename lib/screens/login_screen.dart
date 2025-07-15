@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/forgot_password_screen.dart';
+import 'package:presence_app/screens/forgot_password_screen.dart';
 import 'home_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
