@@ -40,68 +40,6 @@ class _LoginScreenState extends State<LoginScreen> {
     prefs.setString('password', passwordController.text);
   }
 
-  // Future<void> login() async {
-  //   if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-  //     setState(() {
-  //       errorMessage = "Email dan password tidak boleh kosong.";
-  //     });
-  //     return;
-  //   }
-
-  //   setState(() {
-  //     isLoading = true;
-  //     errorMessage = null;
-  //   });
-
-  //   try {
-  //     final response = await http.post(
-  //       Uri.parse('http://presence.guestallow.com/api/auth/login'),
-  //       headers: {'Content-Type': 'application/json'},
-  //       body: jsonEncode({
-  //         'email': emailController.text,
-  //         'password': passwordController.text,
-  //       }),
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final data = jsonDecode(response.body);
-  //       final token = data['token'];
-  //       final user = data['user'];
-
-  //       SharedPreferences prefs = await SharedPreferences.getInstance();
-  //       prefs.setString('auth_token', token);
-  //       prefs.setString('userName', user['name']);
-
-  //       if (rememberMe) {
-  //         prefs.setBool('rememberMe', true);
-  //         prefs.setString('email', emailController.text);
-  //       } else {
-  //         prefs.remove('rememberMe');
-  //         prefs.remove('email');
-  //         prefs.remove('password');
-  //       }
-
-  //       Navigator.pushReplacement(
-  //         context,
-  //         MaterialPageRoute(builder: (_) => HomeScreen()),
-  //       );
-  //     } else {
-  //       final error = jsonDecode(response.body);
-  //       setState(() {
-  //         errorMessage = error['message'] ?? "Login gagal. Coba lagi.";
-  //       });
-  //     }
-  //   } catch (e) {
-  //     setState(() {
-  //       errorMessage = "Terjadi kesalahan jaringan.";
-  //     });
-  //   } finally {
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //   }
-  // }
-
   Future<void> login() async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
       setState(() {
@@ -239,21 +177,21 @@ class _LoginScreenState extends State<LoginScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: rememberMe,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            rememberMe = value ?? false;
-                          });
-                        },
-                        activeColor: Color(0xFF3B6790),
-                      ),
-                      Text('Remember me',
-                          style: TextStyle(color: Colors.black)),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     Checkbox(
+                  //       value: rememberMe,
+                  //       onChanged: (bool? value) {
+                  //         setState(() {
+                  //           rememberMe = value ?? false;
+                  //         });
+                  //       },
+                  //       activeColor: Color(0xFF3B6790),
+                  //     ),
+                  //     Text('Remember me',
+                  //         style: TextStyle(color: Colors.black)),
+                  //   ],
+                  // ),
                   TextButton(
                     onPressed: () {
                       Navigator.push(
